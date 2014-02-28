@@ -1,0 +1,14 @@
+{
+  "name": "usps-node",
+  "author": "Sherod Taylor <sherodtaylor@gmail.com>",
+  "description": "An address validator for usps",
+  "version": "0.1.0",
+  "dependencies": {
+    "xml2js": "0.4.1",
+    "xmlbuilder": "2.1.0"
+  },
+  "devDependencies": {
+    "request": "2.34.0",
+    "mocha": "1.17.1"
+  }
+}
