@@ -40,7 +40,7 @@ usps.prototype.validator = function(address, callback) {
 };
 
 var call = function(api, config, xml, callback) {
-  request(config.server + '?API=' + api + '&XML=' + xml, function(err, res, body){
+  request(config.server + '?API=' + api + '&XML=' + xml, function(err, res, body) {
     xml2js.parseString(body, function(err, result) {
       if (result.Error){
         callback(result.Error);

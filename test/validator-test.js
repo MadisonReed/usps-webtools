@@ -3,7 +3,7 @@ var USPS = require('../index.js');
 
 var usps = new USPS({
   server: 'http://production.shippingapis.com/ShippingAPI.dll',
-  userId: '309MADIS2679'
+  userId: '####'
 });
 
 describe('Address Validator', function() {
