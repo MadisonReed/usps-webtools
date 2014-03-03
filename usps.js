@@ -27,6 +27,7 @@ usps.prototype.validator = function(address, callback) {
 
   call('Verify', this.config, xml, function(err, result) {
     var address = result.AddressValidateResponse.Address[0];
+    
     if (address.Error) {
       callback(address.Error);
       return;
@@ -56,4 +57,3 @@ var call = function(api, config, xml, callback) {
     });
   });
 };
-
