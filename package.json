@@ -8,6 +8,12 @@
     "type": "git",
     "url": "https://github.com/MadisonReed/usps-webtools.git"
   },
+  "contributors": [
+    {
+      "name": "Sherod Taylor",
+      "email": "sherodtaylor@gmail.com"
+    }
+  ],
   "keywords": [
     "usps",
     "web-tools",

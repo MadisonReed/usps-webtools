@@ -27,6 +27,11 @@ usps.prototype.validator = function(address, callback) {
 
   call('Verify', this.config, xml, function(err, result) {
     var address = result.AddressValidateResponse.Address[0];
+    if (address.Error) {
+      callback(address.Error);
+      return;
+    }
+
     var obj = {
       street1: address.Address2[0],
       street2: address.Address1 ? address.Address1[0] : '',
@@ -42,8 +47,8 @@ usps.prototype.validator = function(address, callback) {
 var call = function(api, config, xml, callback) {
   request(config.server + '?API=' + api + '&XML=' + xml, function(err, res, body) {
     xml2js.parseString(body, function(err, result) {
-      if (result.Error){
-        callback(result.Error);
+      if (err) {
+        callback(err);
         return;
       };
 
