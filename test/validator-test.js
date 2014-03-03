@@ -2,8 +2,8 @@ var assert = require('assert');
 var USPS = require('../usps.js');
 
 var usps = new USPS({
-  server: 'http://production.shippingapis.com/ShippingAPI.dll',
-  userId: '309MADIS2679'
+  server: 'url',
+  userId: '#####'
 });
 
 describe('Address Validator', function() {
