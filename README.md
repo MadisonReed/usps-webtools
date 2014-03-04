@@ -1,4 +1,4 @@
-a### Installation:
+### Installation:
 
 ``` sh
 npm install usps-webtools
