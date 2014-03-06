@@ -124,7 +124,6 @@ usps.prototype.cityStateLookup = function(zip, callback) {
 function callUSPS(api, config, xml, callback) {
   request(config.server + '?API=' + api + '&XML=' + xml, function(err, res, body) {
     if (err) {
-      console.log(err);
       callback(err);
       return;
     }
