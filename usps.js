@@ -4,9 +4,9 @@ var xml2js = require('xml2js');
 
 var usps = module.exports = function(config) {
   if (!(config && config.server && config.userId)) {
-    throw "Error: must pass usps server url and userId"
-    return;
+    throw 'Error: must pass usps server url and userId';
   }
+
   this.config = config;
 };
 
@@ -25,7 +25,7 @@ usps.prototype.validator = function(address, callback) {
     }
   }).end();
 
-  call('Verify', this.config, xml, function(err, result) {
+  callUSPS('Verify', this.config, xml, function(err, result) {
     if (err) {
       callback(err)
       return;
@@ -46,7 +46,7 @@ usps.prototype.validator = function(address, callback) {
       state: address.State[0]
     };
 
-    callback(err, obj);
+    callback(null, obj);
   });
 };
 
@@ -63,7 +63,7 @@ usps.prototype.zipLookUp = function(address, callback) {
     }
   }).end();
 
-  call('ZipCodeLookup', this.config, xml, function(err, result) {
+  callUSPS('ZipCodeLookup', this.config, xml, function(err, result) {
     // Error handling for xml2js.parseString
     if (err) {
       callback(err)
@@ -86,11 +86,11 @@ usps.prototype.zipLookUp = function(address, callback) {
       zip: address.Zip5[0] + '-' + address.Zip4[0]
     };
 
-    callback(err, obj);
+    callback(null, obj);
   });
 };
 
-var call = function(api, config, xml, callback) {
+function callUSPS(api, config, xml, callback) {
   request(config.server + '?API=' + api + '&XML=' + xml, function(err, res, body) {
     xml2js.parseString(body, function(err, result) {
       if (err) {
@@ -98,7 +98,7 @@ var call = function(api, config, xml, callback) {
         return;
       }
 
-      callback(err, result);
+      callback(null, result);
     });
   });
-};
+}
