@@ -2,7 +2,7 @@
   "name": "usps-webtools",
   "author": "Sherod Taylor <sherodtaylor@gmail.com>",
   "description": "Api wrapper for the USPS Web-Tools",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "usps",
   "repository": {
     "type": "git",
