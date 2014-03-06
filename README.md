@@ -17,7 +17,6 @@ var usps = new USPS({
   server: 'http://production.shippingapis.com/ShippingAPI.dll',
   userId: 'USPS User id'
 });
-
 ```
 
 ### validator(object, callback)
