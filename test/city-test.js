@@ -18,7 +18,7 @@ describe('#cityStateLookup()', function() {
   it('should return the state when passed a zipcode', function(done) {
     usps.cityStateLookup('98031', function(err, address) {
       address.state.should.equal('WA');
-      done()
+      done();
     });
   });
 });
