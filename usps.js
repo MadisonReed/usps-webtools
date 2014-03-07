@@ -90,8 +90,44 @@ usps.prototype.zipLookUp = function(address, callback) {
   });
 };
 
+usps.prototype.cityStateLookup = function(zip, callback) {
+  var xml = builder.create({
+    CityStateLookupRequest: {
+      '@USERID': this.config.userId,
+      ZipCode: {
+        Zip5: zip
+      }
+    }
+  }).end();
+
+  callUSPS('CityStateLookup', this.config, xml, function(err, result) {
+    if (err) {
+      callback(err);
+      return;
+    }
+
+    if (result.Error) {
+      callback(result.Error.Description[0]);
+      return;
+    }
+
+    var address = result.CityStateLookupResponse.ZipCode[0];
+
+    callback(err, {
+      city: address.City[0],
+      state: address.State[0],
+      zip: address.Zip5[0]
+    });
+  });
+};
+
 function callUSPS(api, config, xml, callback) {
   request(config.server + '?API=' + api + '&XML=' + xml, function(err, res, body) {
+    if (err) {
+      callback(err);
+      return;
+    }
+
     xml2js.parseString(body, function(err, result) {
       if (err) {
         callback(err);
