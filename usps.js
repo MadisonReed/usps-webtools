@@ -39,8 +39,8 @@ usps.prototype.validator = function(address, callback) {
     var address = result.AddressValidateResponse.Address[0];
 
     var obj = {
-      street1: address.Address2[0],
-      street2: address.Address1 ? address.Address1[0] : '',
+      street1: address.Address1[0],
+      street2: address.Address2 ? address.Address2[0] : '',
       city: address.City[0],
       zip: address.Zip5[0],
       state: address.State[0]
@@ -79,8 +79,8 @@ usps.prototype.zipLookUp = function(address, callback) {
     }
 
     var obj = {
-      street1: address.Address2[0],
-      street2: address.Address1 ? address.Address1[0] : '',
+      street1: address.Address1[0],
+      street2: address.Address2 ? address.Address2[0] : '',
       city: address.City[0],
       state: address.State[0],
       zip: address.Zip5[0] + '-' + address.Zip4[0]
