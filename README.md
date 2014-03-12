@@ -52,7 +52,28 @@ callback: err, address
 __Example__
 
 ``` js
-usps.validator({
+usps.zipLookUp({
+  street1: '322 3rd st.',
+  street2: 'Apt 2',
+  city: 'San Francisco',
+  state: 'CA'
+}, function(err, address) {
+  console.log(address);
+});
+```
+
+### cityStateLookup(object, callback)
+
+The validator takes two parameters: zipcode and callback.
+
+zipcode: 5 digit zipcode
+
+callback: err, address
+
+__Example__
+
+``` js
+usps.cityStateLookup({
   street1: '322 3rd st.',
   street2: 'Apt 2',
   city: 'San Francisco',
