@@ -6,9 +6,9 @@ var usps = new USPS({
   userId: '##'
 });
 
-describe('Address Validator', function() {
+describe('Address verify', function() {
   it('should validate apartment', function(done) {
-    usps.validator({
+    usps.verify({
       street1: '11205 SE 233RD PL.',
       street2: 'Apartment 2',
       city: 'Kent',
@@ -21,7 +21,7 @@ describe('Address Validator', function() {
   });
 
   it('should validate Unit', function(done) {
-    usps.validator({
+    usps.verify({
       street1: '11205 SE 233RD PL.',
       street2: 'UNIT 2',
       city: 'Kent',
@@ -34,7 +34,7 @@ describe('Address Validator', function() {
   });
 
   it('should validate Building', function(done) {
-    usps.validator({
+    usps.verify({
       street1: '11205 SE 233RD PL.',
       street2: 'Building 2',
       city: 'Kent',
@@ -47,7 +47,7 @@ describe('Address Validator', function() {
   });
 
   it('should validate Floor', function(done) {
-    usps.validator({
+    usps.verify({
       street1: '11205 SE 233RD PL.',
       street2: 'Floor 2',
       city: 'Kent',

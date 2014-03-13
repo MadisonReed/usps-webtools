@@ -10,7 +10,7 @@ var usps = module.exports = function(config) {
   this.config = config;
 };
 
-usps.prototype.validator = function(address, callback) {
+usps.prototype.verify = function(address, callback) {
   var xml = builder.create({
     AddressValidateRequest: {
       '@USERID': this.config.userId,
@@ -55,7 +55,7 @@ usps.prototype.validator = function(address, callback) {
   });
 };
 
-usps.prototype.zipLookUp = function(address, callback) {
+usps.prototype.zipCodeLookup = function(address, callback) {
   var xml = builder.create({
     ZipCodeLookupRequest: {
       '@USERID': this.config.userId,

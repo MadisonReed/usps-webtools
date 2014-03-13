@@ -13,7 +13,7 @@ describe('Zipcode Lookup', function() {
   var zip = '94607-3785';
 
   it('should return the address with zip', function(done) {
-    usps.zipLookUp({
+    usps.zipCodeLookup({
       street1: '121 Embarcadero West',
       street2: 'Apt 2205',
       city: 'Oakland',
@@ -25,7 +25,7 @@ describe('Zipcode Lookup', function() {
   });
 
   it('should error if address is invalid', function(done) {
-    usps.zipLookUp({
+    usps.zipCodeLookup({
       street1: 'sdfisd',
       street2: 'Apt 2205',
       city: 'Seattle',
@@ -37,7 +37,7 @@ describe('Zipcode Lookup', function() {
   });
 
   it('should pass error to callback if street is missing', function(done) {
-    usps.zipLookUp({
+    usps.zipCodeLookup({
       city: 'Oakland',
       state: 'CA'
     }, function(err, address) {
@@ -47,7 +47,7 @@ describe('Zipcode Lookup', function() {
   });
 
   it('error should be passed to callback if city is missing', function(done) {
-    usps.zipLookUp({
+    usps.zipCodeLookup({
       street1: '121 Embarcadero West',
       street2: 'Apt 2205',
       state: 'CA'
@@ -58,7 +58,7 @@ describe('Zipcode Lookup', function() {
   });
 
   it('should return an error if the address is fake', function(done) {
-    usps.zipLookUp({
+    usps.zipCodeLookup({
       street1: '453 sdfsdfa Road',
       street2: 'sdfadf',
       city: 'kojs',
