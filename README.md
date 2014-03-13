@@ -19,9 +19,9 @@ var usps = new USPS({
 });
 ```
 
-### validator(object, callback)
+### verify(object, callback)
 
-The validator takes two parameters: object and callback.
+Verify takes two parameters: object and callback.
 
 object: street1, street2, city, state, zip
 
@@ -30,7 +30,7 @@ callback: err, address
 __Example__
 
 ``` js
-usps.validator({
+usps.verify({
   street1: '322 3rd st.',
   street2: 'Apt 2',
   city: 'San Francisco',
@@ -41,9 +41,9 @@ usps.validator({
 });
 ```
 
-### zipLookup(object, callback)
+### zipCodeLookup(object, callback)
 
-The validator takes two parameters: object and callback.
+zipCodeLookup takes two parameters: object and callback.
 
 object: street1, street2, city, state
 
@@ -52,7 +52,7 @@ callback: err, address
 __Example__
 
 ``` js
-usps.zipLookUp({
+usps.zipCodeLookup({
   street1: '322 3rd st.',
   street2: 'Apt 2',
   city: 'San Francisco',
@@ -64,7 +64,7 @@ usps.zipLookUp({
 
 ### cityStateLookup(object, callback)
 
-The validator takes two parameters: zipcode and callback.
+cityStateLookup takes two parameters: zipcode and callback.
 
 zipcode: 5 digit zipcode
 
