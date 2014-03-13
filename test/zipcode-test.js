@@ -1,9 +1,11 @@
 var assert = require('assert');
 var USPS = require('../usps.js');
+var chai = require('chai');
+var should = require('chai').should();
 
 var usps = new USPS({
   server: 'http://production.shippingapis.com/ShippingAPI.dll',
-  userId: '###'
+  userId: '##'
 });
 
 
@@ -17,7 +19,7 @@ describe('Zipcode Lookup', function() {
       city: 'Oakland',
       state: 'CA'
     }, function(err, address) {
-      assert.equal(address.zip, zip);
+      address.zip.should.equal(zip);
       done();
     });
   });
@@ -29,7 +31,7 @@ describe('Zipcode Lookup', function() {
       city: 'Seattle',
       state: 'WA'
     }, function(err, address) {
-      assert.equal(err.Description[0], 'Address Not Found.  ');
+      err.should.equal('Address Not Found.  ');
       done();
     });
   });
@@ -39,7 +41,7 @@ describe('Zipcode Lookup', function() {
       city: 'Oakland',
       state: 'CA'
     }, function(err, address) {
-      assert.equal(!!err, true);
+      should.exist(err);
       done();
     });
   });
@@ -50,8 +52,20 @@ describe('Zipcode Lookup', function() {
       street2: 'Apt 2205',
       state: 'CA'
     }, function(err, address) {
-      assert.equal(!!err, true);
+      should.exist(err);
       done();
     });
+  });
+
+  it('should return an error if the address is fake', function(done) {
+    usps.zipLookUp({
+      street1: '453 sdfsdfa Road',
+      street2: 'sdfadf',
+      city: 'kojs',
+      state: 'LS'
+    }, function(err, address) {
+      should.exist(err);
+      done();
+    })
   });
 });

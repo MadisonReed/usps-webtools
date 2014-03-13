@@ -15,8 +15,8 @@ usps.prototype.validator = function(address, callback) {
     AddressValidateRequest: {
       '@USERID': this.config.userId,
       Address: {
-        Address1: address.street1,
-        Address2: address.street2 || '',
+        Address1: address.street2 || '',
+        Address2: address.street1,
         City: address.city,
         State: address.state,
         Zip5: address.zip,
@@ -38,6 +38,11 @@ usps.prototype.validator = function(address, callback) {
     
     var address = result.AddressValidateResponse.Address[0];
 
+    if (address.Error) {
+      callback(address.Error[0].Description[0]);
+      return;
+    }
+
     var obj = {
       street1: address.Address2[0],
       street2: address.Address1 ? address.Address1[0] : '',
@@ -55,8 +60,8 @@ usps.prototype.zipLookUp = function(address, callback) {
     ZipCodeLookupRequest: {
       '@USERID': this.config.userId,
       Address: {
-        Address1: address.street1,
-        Address2: address.street2 || '',
+        Address1: address.street2 || '',
+        Address2: address.street1,
         City: address.city,
         State: address.state,
       }
@@ -70,11 +75,16 @@ usps.prototype.zipLookUp = function(address, callback) {
       return;
     }
 
+    //Error handling for USPS
+    if (result.Error) {
+      callback(result.Error[0]);
+      return;
+    }
+
     var address = result.ZipCodeLookupResponse.Address[0];
 
-    //Error handling for USPS
     if (address.Error) {
-      callback(address.Error[0]);
+      callback(address.Error[0].Description[0]);
       return;
     }
 
@@ -112,6 +122,11 @@ usps.prototype.cityStateLookup = function(zip, callback) {
     }
 
     var address = result.CityStateLookupResponse.ZipCode[0];
+    
+    if (address.Error) {
+      callback(address.Error[0].Description[0]);
+      return;
+    }
 
     callback(err, {
       city: address.City[0],
@@ -134,7 +149,7 @@ function callUSPS(api, config, xml, callback) {
         return;
       }
 
-      callback(null, result);
+      callback(err, result);
     });
   });
 }
