@@ -58,32 +58,6 @@ describe('Address Validator', function() {
       done();
     });
   });
-
-  it('should move the apartment number to street2', function(done) {
-    usps.validator({
-      street1: '11205 SE 233RD PL. apartment 2',
-      city: 'Kent',
-      state: 'WA',
-      zip: '98031'
-    }, function(err, address){
-      assert.equal(address.street1, '11205 SE 233RD PL');
-      assert.equal(address.street2, 'APT 2');
-      done();
-    });
-  });
-
-  it('should move the number to street2 with #', function(done) {
-    usps.validator({
-      street1: '11205 SE 233RD PL. 2',
-      city: 'Kent',
-      state: 'WA',
-      zip: '98031'
-    }, function(err, address){
-      assert.equal(address.street1, '11205 SE 233RD PL');
-      assert.equal(address.street2, '# 2');
-      done();
-    });
-  });
 });
 
 describe('It should throw exceptions', function() {

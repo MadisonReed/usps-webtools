@@ -21,4 +21,11 @@ describe('#cityStateLookup()', function() {
       done();
     });
   });
+
+  it('should return an err when invalid zip', function(done){
+    usps.cityStateLookup('23234324', function(err, address) {
+      should.exist(err);
+      done();
+    });
+  });
 });
