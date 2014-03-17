@@ -14,6 +14,17 @@ var usps = module.exports = function(config) {
   this.config = config;
 };
 
+/**
+  Verifies an address
+
+  @param {Object} address The address to be verified
+  @param {String} address.street1 Street
+  @param {String} [address.street2] Secondary street (apartment, etc)
+  @param {String} address.city City
+  @param {String} address.state State (two-letter, capitalized)
+  @param {String} address.zip Zipcode
+  @returns {Object} instance of module
+*/
 usps.prototype.verify = function(address, callback) {
   var xml = builder
     .create({
@@ -31,13 +42,16 @@ usps.prototype.verify = function(address, callback) {
     })
     .end();
 
-  callUSPS('Verify', this.config, xml, function(err, result) {
+  callUSPS('Verify', this.config, xml.substr(0, 100), function(err, result) {
     if (err) {
-      callback(err)
+      callback(new USPSError(err.Description || 'An error occurred', err, {
+        method: 'verify'
+      }));
       return;
     }
 
     if (result.Error) {
+      console.log(result.Error);
       callback(new USPSError(result.Error));
       return;
     }
@@ -59,8 +73,12 @@ usps.prototype.verify = function(address, callback) {
 
     callback(null, obj);
   });
+
+  return this;
 };
 
+/**
+  Looks up an add
 usps.prototype.zipCodeLookup = function(address, callback) {
   var xml = builder
     .create({
@@ -106,6 +124,8 @@ usps.prototype.zipCodeLookup = function(address, callback) {
 
     callback(null, obj);
   });
+
+  return this;
 };
 
 usps.prototype.cityStateLookup = function(zip, callback) {
