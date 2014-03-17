@@ -1,6 +1,10 @@
+// external dependencies
 var request = require('request');
 var builder = require('xmlbuilder');
 var xml2js = require('xml2js');
+
+// internal dependencies
+var USPSError = require('./error.js');
 
 var usps = module.exports = function(config) {
   if (!(config && config.server && config.userId)) {
@@ -11,19 +15,21 @@ var usps = module.exports = function(config) {
 };
 
 usps.prototype.verify = function(address, callback) {
-  var xml = builder.create({
-    AddressValidateRequest: {
-      '@USERID': this.config.userId,
-      Address: {
-        Address1: address.street2 || '',
-        Address2: address.street1,
-        City: address.city,
-        State: address.state,
-        Zip5: address.zip,
-        Zip4: ''
+  var xml = builder
+    .create({
+      AddressValidateRequest: {
+        '@USERID': this.config.userId,
+        Address: {
+          Address1: address.street2 || '',
+          Address2: address.street1,
+          City: address.city,
+          State: address.state,
+          Zip5: address.zip,
+          Zip4: ''
+        }
       }
-    }
-  }).end();
+    })
+    .end();
 
   callUSPS('Verify', this.config, xml, function(err, result) {
     if (err) {
@@ -32,14 +38,14 @@ usps.prototype.verify = function(address, callback) {
     }
 
     if (result.Error) {
-      callback(result.Error);
+      callback(new USPSError(result.Error));
       return;
     }
     
     var address = result.AddressValidateResponse.Address[0];
 
     if (address.Error) {
-      callback(address.Error[0].Description[0]);
+      callback(new USPSError(address.Error[0].Description[0].trim(), address.Error));
       return;
     }
 
@@ -56,17 +62,19 @@ usps.prototype.verify = function(address, callback) {
 };
 
 usps.prototype.zipCodeLookup = function(address, callback) {
-  var xml = builder.create({
-    ZipCodeLookupRequest: {
-      '@USERID': this.config.userId,
-      Address: {
-        Address1: address.street2 || '',
-        Address2: address.street1,
-        City: address.city,
-        State: address.state,
+  var xml = builder
+    .create({
+      ZipCodeLookupRequest: {
+        '@USERID': this.config.userId,
+        Address: {
+          Address1: address.street2 || '',
+          Address2: address.street1,
+          City: address.city,
+          State: address.state,
+        }
       }
-    }
-  }).end();
+    })
+    .end();
 
   callUSPS('ZipCodeLookup', this.config, xml, function(err, result) {
     // Error handling for xml2js.parseString
@@ -77,14 +85,14 @@ usps.prototype.zipCodeLookup = function(address, callback) {
 
     //Error handling for USPS
     if (result.Error) {
-      callback(result.Error[0]);
+      callback(new USPSError(result.Error[0]));
       return;
     }
 
     var address = result.ZipCodeLookupResponse.Address[0];
 
     if (address.Error) {
-      callback(address.Error[0].Description[0]);
+      callback(new USPSError(address.Error[0].Description[0].trim()));
       return;
     }
 
@@ -101,14 +109,16 @@ usps.prototype.zipCodeLookup = function(address, callback) {
 };
 
 usps.prototype.cityStateLookup = function(zip, callback) {
-  var xml = builder.create({
-    CityStateLookupRequest: {
-      '@USERID': this.config.userId,
-      ZipCode: {
-        Zip5: zip
+  var xml = builder
+    .create({
+      CityStateLookupRequest: {
+        '@USERID': this.config.userId,
+        ZipCode: {
+          Zip5: zip
+        }
       }
-    }
-  }).end();
+    })
+    .end();
 
   callUSPS('CityStateLookup', this.config, xml, function(err, result) {
     if (err) {
@@ -117,14 +127,14 @@ usps.prototype.cityStateLookup = function(zip, callback) {
     }
 
     if (result.Error) {
-      callback(result.Error.Description[0]);
+      callback(new USPSError(result.Error.Description[0].trim()));
       return;
     }
 
     var address = result.CityStateLookupResponse.ZipCode[0];
     
     if (address.Error) {
-      callback(address.Error[0].Description[0]);
+      callback(new USPSError(address.Error[0].Description[0].trim()));
       return;
     }
 
@@ -143,13 +153,6 @@ function callUSPS(api, config, xml, callback) {
       return;
     }
 
-    xml2js.parseString(body, function(err, result) {
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      callback(err, result);
-    });
+    xml2js.parseString(body, callback);
   });
 }

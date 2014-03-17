@@ -1,5 +1,5 @@
 var chai = require('chai');
-var USPS = require('../usps.js');
+var USPS = require('../');
 var should = chai.should();
 
 var usps = new USPS({

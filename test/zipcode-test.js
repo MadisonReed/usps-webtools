@@ -1,6 +1,5 @@
 var assert = require('assert');
-var USPS = require('../usps.js');
-var chai = require('chai');
+var USPS = require('../');
 var should = require('chai').should();
 
 var usps = new USPS({
@@ -31,7 +30,7 @@ describe('Zipcode Lookup', function() {
       city: 'Seattle',
       state: 'WA'
     }, function(err, address) {
-      err.should.equal('Address Not Found.  ');
+      err.message.should.equal('Address Not Found.');
       done();
     });
   });
