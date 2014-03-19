@@ -23,6 +23,7 @@ var usps = module.exports = function(config) {
   @param {String} address.city City
   @param {String} address.state State (two-letter, capitalized)
   @param {String} address.zip Zipcode
+  @param {Function} callback The callback function
   @returns {Object} instance of module
 */
 usps.prototype.verify = function(address, callback) {
@@ -61,7 +62,16 @@ usps.prototype.verify = function(address, callback) {
 };
 
 /**
-  Looks up an add
+  Looks up a zipcode, given an address
+
+  @param {Object} address Address to find zipcode for
+  @param {String} address.street1 Street
+  @param {String} [address.street2] Secondary street (apartment, etc)
+  @param {String} address.city City
+  @param {String} address.state State (two-letter, capitalized)
+  @param {String} address.zip Zipcode
+  @param {Function} callback The callback function
+  @returns {Object} instance of module
 */
 usps.prototype.zipCodeLookup = function(address, callback) {
   var xml = builder
@@ -96,6 +106,13 @@ usps.prototype.zipCodeLookup = function(address, callback) {
   return this;
 };
 
+/**
+  City State lookup, based on zip
+
+  @param {String} zip Zipcode to retrieve city & state for
+  @param {Function} callback The callback function
+  @returns {Object} instance of module
+*/
 usps.prototype.cityStateLookup = function(zip, callback) {
   var xml = builder
     .create({
@@ -122,6 +139,9 @@ usps.prototype.cityStateLookup = function(zip, callback) {
   });
 };
 
+/**
+  Method to call USPS
+*/
 function callUSPS(api, resultDotNotation, config, xml, callback) {
   request(config.server + '?API=' + api + '&XML=' + xml, function(err, res, body) {
     if (err) {
@@ -143,6 +163,23 @@ function callUSPS(api, resultDotNotation, config, xml, callback) {
         return;
       }
 
+      // may have a root-level error
+      if (result.Error) {
+        try {
+          errMessage = result.Error.Description[0].trim();
+        } catch(err) {
+          errMessage = result.Error;
+        }
+
+        callback(new USPSError(errMessage, result.Error));
+        return;
+      }
+
+      /**
+        walking the result, to drill into where we want
+        resultDotNotation looks like 'key.key'
+        though it may actually have arrays, so returning first cell
+      */
       var specificResult = result;
       var parts = resultDotNotation.split('.');
       function walkResult() {
@@ -162,17 +199,7 @@ function callUSPS(api, resultDotNotation, config, xml, callback) {
       }
       walkResult();
 
-      if (result.Error) {
-        try {
-          errMessage = result.Error.Description[0].trim();
-        } catch(err) {
-          errMessage = result.Error;
-        }
-
-        callback(new USPSError(errMessage, result.Error));
-        return;
-      }
-
+      // specific error handling
       if (specificResult.Error) {
         try {
           errMessage = specificResult.Error[0].Description[0].trim();
@@ -184,6 +211,7 @@ function callUSPS(api, resultDotNotation, config, xml, callback) {
         return;
       }
 
+      // just peachy
       callback(null, specificResult);
     });
   });
