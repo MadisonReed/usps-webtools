@@ -42,36 +42,19 @@ usps.prototype.verify = function(address, callback) {
     })
     .end();
 
-  callUSPS('Verify', this.config, xml.substr(0, 100), function(err, result) {
+  callUSPS('Verify', 'AddressValidateResponse.Address', this.config, xml, function(err, address) {
     if (err) {
-      callback(new USPSError(err.Description || 'An error occurred', err, {
-        method: 'verify'
-      }));
+      callback(err);
       return;
     }
 
-    if (result.Error) {
-      console.log(result.Error);
-      callback(new USPSError(result.Error));
-      return;
-    }
-    
-    var address = result.AddressValidateResponse.Address[0];
-
-    if (address.Error) {
-      callback(new USPSError(address.Error[0].Description[0].trim(), address.Error));
-      return;
-    }
-
-    var obj = {
+    callback(null, {
       street1: address.Address2[0],
       street2: address.Address1 ? address.Address1[0] : '',
       city: address.City[0],
       zip: address.Zip5[0],
       state: address.State[0]
-    };
-
-    callback(null, obj);
+    });
   });
 
   return this;
@@ -79,6 +62,7 @@ usps.prototype.verify = function(address, callback) {
 
 /**
   Looks up an add
+*/
 usps.prototype.zipCodeLookup = function(address, callback) {
   var xml = builder
     .create({
@@ -94,35 +78,19 @@ usps.prototype.zipCodeLookup = function(address, callback) {
     })
     .end();
 
-  callUSPS('ZipCodeLookup', this.config, xml, function(err, result) {
-    // Error handling for xml2js.parseString
+  callUSPS('ZipCodeLookup', 'ZipCodeLookupResponse.Address', this.config, xml, function(err, address) {
     if (err) {
-      callback(err)
+      callback(err);
       return;
     }
 
-    //Error handling for USPS
-    if (result.Error) {
-      callback(new USPSError(result.Error[0]));
-      return;
-    }
-
-    var address = result.ZipCodeLookupResponse.Address[0];
-
-    if (address.Error) {
-      callback(new USPSError(address.Error[0].Description[0].trim()));
-      return;
-    }
-
-    var obj = {
+    callback(null, {
       street1: address.Address2[0],
       street2: address.Address1 ? address.Address1[0] : '',
       city: address.City[0],
       state: address.State[0],
       zip: address.Zip5[0] + '-' + address.Zip4[0]
-    };
-
-    callback(null, obj);
+    });
   });
 
   return this;
@@ -140,21 +108,9 @@ usps.prototype.cityStateLookup = function(zip, callback) {
     })
     .end();
 
-  callUSPS('CityStateLookup', this.config, xml, function(err, result) {
+  callUSPS('CityStateLookup', 'CityStateLookupResponse.ZipCode', this.config, xml, function(err, address) {
     if (err) {
       callback(err);
-      return;
-    }
-
-    if (result.Error) {
-      callback(new USPSError(result.Error.Description[0].trim()));
-      return;
-    }
-
-    var address = result.CityStateLookupResponse.ZipCode[0];
-    
-    if (address.Error) {
-      callback(new USPSError(address.Error[0].Description[0].trim()));
       return;
     }
 
@@ -166,13 +122,69 @@ usps.prototype.cityStateLookup = function(zip, callback) {
   });
 };
 
-function callUSPS(api, config, xml, callback) {
+function callUSPS(api, resultDotNotation, config, xml, callback) {
   request(config.server + '?API=' + api + '&XML=' + xml, function(err, res, body) {
     if (err) {
-      callback(err);
+      callback(new USPSError(err.message, err, {
+        method: api,
+        during: 'request'
+      }));
       return;
     }
 
-    xml2js.parseString(body, callback);
+    xml2js.parseString(body, function(err, result) {
+      var errMessage;
+
+      if (err) {
+        callback(new USPSError(err.message, err, {
+          method: api,
+          during: 'xml parse'
+        }));
+        return;
+      }
+
+      var specificResult = result;
+      var parts = resultDotNotation.split('.');
+      function walkResult() {
+        var key = parts.shift();
+
+        if (key === undefined) {
+          return;
+        }
+
+        specificResult = specificResult[key];
+
+        if (Array.isArray(specificResult)) {
+          specificResult = specificResult[0];
+        }
+
+        walkResult();
+      }
+      walkResult();
+
+      if (result.Error) {
+        try {
+          errMessage = result.Error.Description[0].trim();
+        } catch(err) {
+          errMessage = result.Error;
+        }
+
+        callback(new USPSError(errMessage, result.Error));
+        return;
+      }
+
+      if (specificResult.Error) {
+        try {
+          errMessage = specificResult.Error[0].Description[0].trim();
+        } catch(err) {
+          errMessage = specificResult.Error;
+        }
+
+        callback(new USPSError(errMessage, specificResult.Error));
+        return;
+      }
+
+      callback(null, specificResult);
+    });
   });
 }
