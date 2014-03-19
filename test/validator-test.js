@@ -1,5 +1,5 @@
 var assert = require('assert');
-var USPS = require('../usps.js');
+var USPS = require('../');
 
 var usps = new USPS({
   server: 'http://production.shippingapis.com/ShippingAPI.dll',
@@ -86,4 +86,3 @@ describe('It should throw exceptions', function() {
     done();
   });
 });
-
