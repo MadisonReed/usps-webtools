@@ -27,23 +27,18 @@ var usps = module.exports = function(config) {
   @returns {Object} instance of module
 */
 usps.prototype.verify = function(address, callback) {
-  var xml = builder
-    .create({
-      AddressValidateRequest: {
-        '@USERID': this.config.userId,
-        Address: {
-          Address1: address.street2 || '',
-          Address2: address.street1,
-          City: address.city,
-          State: address.state,
-          Zip5: address.zip,
-          Zip4: ''
-        }
-      }
-    })
-    .end();
+  var obj = {
+    Address: {
+      Address1: address.street2 || '',
+      Address2: address.street1,
+      City: address.city,
+      State: address.state,
+      Zip5: address.zip,
+      Zip4: ''
+    }
+  };
 
-  callUSPS('Verify', 'AddressValidateResponse.Address', this.config, xml, function(err, address) {
+  callUSPS('Verify', 'AddressValidateRequest', 'AddressValidateResponse.Address', this.config, obj, function(err, address) {
     if (err) {
       callback(err);
       return;
@@ -74,21 +69,16 @@ usps.prototype.verify = function(address, callback) {
   @returns {Object} instance of module
 */
 usps.prototype.zipCodeLookup = function(address, callback) {
-  var xml = builder
-    .create({
-      ZipCodeLookupRequest: {
-        '@USERID': this.config.userId,
-        Address: {
-          Address1: address.street2 || '',
-          Address2: address.street1,
-          City: address.city,
-          State: address.state,
-        }
-      }
-    })
-    .end();
+  var obj = {
+    Address: {
+      Address1: address.street2 || '',
+      Address2: address.street1,
+      City: address.city,
+      State: address.state
+    }
+  };
 
-  callUSPS('ZipCodeLookup', 'ZipCodeLookupResponse.Address', this.config, xml, function(err, address) {
+  callUSPS('ZipCodeLookup', 'ZipCodeLookupRequest', 'ZipCodeLookupResponse.Address', this.config, obj, function(err, address) {
     if (err) {
       callback(err);
       return;
@@ -114,18 +104,13 @@ usps.prototype.zipCodeLookup = function(address, callback) {
   @returns {Object} instance of module
 */
 usps.prototype.cityStateLookup = function(zip, callback) {
-  var xml = builder
-    .create({
-      CityStateLookupRequest: {
-        '@USERID': this.config.userId,
-        ZipCode: {
-          Zip5: zip
-        }
-      }
-    })
-    .end();
+  var obj = {
+    ZipCode: {
+      Zip5: zip
+    }
+  };
 
-  callUSPS('CityStateLookup', 'CityStateLookupResponse.ZipCode', this.config, xml, function(err, address) {
+  callUSPS('CityStateLookup', 'CityStateLookupRequest', 'CityStateLookupResponse.ZipCode', this.config, obj, function(err, address) {
     if (err) {
       callback(err);
       return;
@@ -142,8 +127,22 @@ usps.prototype.cityStateLookup = function(zip, callback) {
 /**
   Method to call USPS
 */
-function callUSPS(api, resultDotNotation, config, xml, callback) {
-  request(config.server + '?API=' + api + '&XML=' + xml, function(err, res, body) {
+function callUSPS(api, method, resultDotNotation, config, params, callback) {
+  var obj = {};
+  obj[method] = params;
+  obj[method]['@USERID'] = config.userId;
+
+  var xml = builder.create(obj).end();
+
+  var opts = {
+    url: config.server,
+    qs: {
+      API: api,
+      XML: xml
+    }
+  };
+
+  request(opts, function(err, res, body) {
     if (err) {
       callback(new USPSError(err.message, err, {
         method: api,
