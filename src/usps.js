@@ -74,7 +74,7 @@ usps.prototype.zipCodeLookup = function(address, callback) {
       Address1: address.street2 || '',
       Address2: address.street1,
       City: address.city,
-      State: address.state,
+      State: address.state
     }
   };
 
