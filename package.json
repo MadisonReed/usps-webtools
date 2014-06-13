@@ -2,7 +2,7 @@
   "name": "usps-webtools",
   "author": "Sherod Taylor <sherodtaylor@gmail.com>",
   "description": "Api wrapper for the USPS Web-Tools",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "main": "./src/usps",
   "repository": {
     "type": "git",
@@ -33,7 +33,7 @@
   ],
   "dependencies": {
     "request": "2.34.0",
-    "xml2js": "0.4.1",
+    "xml2js": "0.4.4",
     "xmlbuilder": "2.1.0"
   },
   "devDependencies": {
