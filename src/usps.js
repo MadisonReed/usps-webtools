@@ -96,6 +96,48 @@ usps.prototype.zipCodeLookup = function(address, callback) {
   return this;
 };
 
+
+/**
+  Pricing Rate Lookup, based on USPS RateV4
+
+  @param {Object} information about pricing Rate
+  @param {Function} callback The callback function
+  @returns {Object} instance of module
+*/
+usps.prototype.pricingRateV4 = function (pricingRate, callback) {
+    "use strict";
+    var obj = {
+        Package: {
+            '@ID'         : '1ST',
+            Service       : pricingRate.Service || 'PRIORITY',
+            ZipOrigination: pricingRate.ZipOrigination || 55401,
+            ZipDestination: pricingRate.ZipDestination,
+            Pounds        : pricingRate.Pounds,
+            Ounces        : pricingRate.Ounces,
+            Container     : pricingRate.Container,
+            Size          : pricingRate.Size,
+            Width         : pricingRate.Width,
+            Length        : pricingRate.Length,
+            Height        : pricingRate.Height,
+            Girth         : pricingRate.Girth
+
+        }
+    };
+
+    callUSPS('RateV4', 'RateV4Request', 'RateV4Response.Package', this.config, obj, function (err, lePackage) {
+        if (err) {
+            callback(err);
+            return;
+        }
+        callback(null, {
+            service: lePackage.Postage[0].MailService,
+            rate   : lePackage.Postage[0].Rate
+        });
+    });
+    return this;
+};
+
+
 /**
   City State lookup, based on zip
 
