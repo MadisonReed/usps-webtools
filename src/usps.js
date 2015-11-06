@@ -29,12 +29,14 @@ var usps = module.exports = function(config) {
 usps.prototype.verify = function(address, callback) {
   var obj = {
     Address: {
+      FirmName: address.firmName,
       Address1: address.street2 || '',
       Address2: address.street1,
       City: address.city,
       State: address.state,
       Zip5: address.zip,
-      Zip4: ''
+      Zip4: address.zip4,
+      Urbanization: address.urbanization
     }
   };
 
@@ -45,11 +47,14 @@ usps.prototype.verify = function(address, callback) {
     }
 
     callback(null, {
+      firmName: address.FirmName[0],
       street1: address.Address2[0],
       street2: address.Address1 ? address.Address1[0] : '',
       city: address.City[0],
       zip: address.Zip5[0],
-      state: address.State[0]
+      state: address.State[0],
+      zip4: address.Zip4[0],
+      urbanization: address.Urbanization[0]
     });
   });
 
