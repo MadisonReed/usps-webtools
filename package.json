@@ -1,12 +1,12 @@
 {
-  "name": "usps-webtools",
+  "name": "usps-webtools-angular",
   "author": "Sherod Taylor <sherodtaylor@gmail.com>",
   "description": "Api wrapper for the USPS Web-Tools",
   "version": "0.0.10",
   "main": "./src/usps",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MadisonReed/usps-webtools.git"
+    "url": "https://github.com/pbtura/usps-webtools"
   },
   "contributors": [
     {
@@ -32,6 +32,7 @@
     "standardization"
   ],
   "dependencies": {
+    "angular": "1.4.x",
     "request": "2.34.0",
     "xml2js": "0.4.4",
     "xmlbuilder": "2.1.0"
@@ -40,7 +41,7 @@
     "mocha": "1.17.1",
     "chai": "1.9.0"
   },
-  "repository": "git://github.com/MadisonReed/usps-webtools",
+  "repository": "https://github.com/pbtura/usps-webtools",
   "engines": {
     "node": ">=0.10.20"
   },
