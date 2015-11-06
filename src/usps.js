@@ -46,16 +46,22 @@ usps.prototype.verify = function(address, callback) {
       return;
     }
 
-    callback(null, {
-      firmName: address.FirmName[0],
+    var result = {
+
       street1: address.Address2[0],
       street2: address.Address1 ? address.Address1[0] : '',
       city: address.City[0],
       zip: address.Zip5[0],
       state: address.State[0],
-      zip4: address.Zip4[0],
-      urbanization: address.Urbanization[0]
-    });
+      zip4: address.Zip4[0]
+    };
+    if(address.FirmName) {
+      result.firmName = address.FirmName[0]
+    }
+    if(address.Urbanization) {
+      result.urbanization = address.Urbanization[0];
+    }
+    callback(null, result);
   });
 
   return this;
