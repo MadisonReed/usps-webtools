@@ -10,6 +10,9 @@ var usps = module.exports = function(config) {
   if (!(config && config.server && config.userId)) {
     throw 'Error: must pass usps server url and userId';
   }
+  if(!config.ttl){
+    config.ttl = 100000;
+  }
 
   this.config = config;
 };
@@ -139,7 +142,8 @@ function callUSPS(api, method, resultDotNotation, config, params, callback) {
     qs: {
       API: api,
       XML: xml
-    }
+    },
+    timeout: config.ttl,
   };
 
   request(opts, function(err, res, body) {
