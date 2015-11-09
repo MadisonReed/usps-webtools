@@ -34,13 +34,11 @@ usps.prototype.verify = function(address, callback) {
       Address2: address.street1,
       City: address.city,
       State: address.state,
-      Zip5: address.zip
+      Zip5: address.zip,
+      Zip4: address.zip4 ? address.zip4 : ''
     }
   };
-  if(address.zip4)
-  {
-    obj.Address.Zip4 = address.zip4;
-  }
+
   if(address.urbanization)
   {
     obj.Address.Urbanization = address.urbanization;
