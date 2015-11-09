@@ -29,7 +29,7 @@ var usps = module.exports = function(config) {
 usps.prototype.verify = function(address, callback) {
   var obj = {
     Address: {
-      FirmName: address.firmName,
+      FirmName: address.firm_name,
       Address1: address.street2 || '',
       Address2: address.street1,
       City: address.city,
@@ -60,7 +60,7 @@ usps.prototype.verify = function(address, callback) {
       zip4: address.Zip4[0]
     };
     if(address.FirmName) {
-      result.firmName = address.FirmName[0]
+      result.firm_name = address.FirmName[0]
     }
     if(address.Urbanization) {
       result.urbanization = address.Urbanization[0];
