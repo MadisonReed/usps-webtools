@@ -15,7 +15,8 @@ USPS = require('usps-webtools');
 
 var usps = new USPS({
   server: 'http://production.shippingapis.com/ShippingAPI.dll',
-  userId: 'USPS User id'
+  userId: 'USPS User id',
+  ttl: '10000' //TTL in milliseconds for request
 });
 ```
 
