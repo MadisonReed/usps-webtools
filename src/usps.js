@@ -1,5 +1,5 @@
 // external dependencies
-var request = require('browser-request');
+var request = require('request');
 var builder = require('xmlbuilder');
 var xml2js = require('xml2js');
 
