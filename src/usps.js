@@ -41,18 +41,18 @@ usps.prototype.verify = function(address, callback) {
     }
   };
 
-  callUSPS('Verify', 'AddressValidateRequest', 'AddressValidateResponse.Address', this.config, obj, function(err, address) {
+  callUSPS('Verify', 'AddressValidate', 'Address', this.config, obj, function(err, address) {
     if (err) {
       callback(err);
       return;
     }
 
     callback(null, {
-      street1: address.Address2[0],
-      street2: address.Address1 ? address.Address1[0] : '',
-      city: address.City[0],
-      zip: address.Zip5[0],
-      state: address.State[0]
+      street1: address.Address2,
+      street2: address.Address1 ? address.Address1 : '',
+      city: address.City,
+      zip: address.Zip5,
+      state: address.State
     });
   });
 
@@ -81,18 +81,18 @@ usps.prototype.zipCodeLookup = function(address, callback) {
     }
   };
 
-  callUSPS('ZipCodeLookup', 'ZipCodeLookupRequest', 'ZipCodeLookupResponse.Address', this.config, obj, function(err, address) {
+  callUSPS('ZipCodeLookup', 'ZipCodeLookup', 'Address', this.config, obj, function(err, address) {
     if (err) {
       callback(err);
       return;
     }
 
     callback(null, {
-      street1: address.Address2[0],
-      street2: address.Address1 ? address.Address1[0] : '',
-      city: address.City[0],
-      state: address.State[0],
-      zip: address.Zip5[0] + '-' + address.Zip4[0]
+      street1: address.Address2,
+      street2: address.Address1 ? address.Address1 : '',
+      city: address.City,
+      state: address.State,
+      zip: address.Zip5 + '-' + address.Zip4
     });
   });
 
@@ -113,16 +113,16 @@ usps.prototype.cityStateLookup = function(zip, callback) {
     }
   };
 
-  callUSPS('CityStateLookup', 'CityStateLookupRequest', 'CityStateLookupResponse.ZipCode', this.config, obj, function(err, address) {
+  callUSPS('CityStateLookup', 'CityStateLookup', 'ZipCode', this.config, obj, function(err, address) {
     if (err) {
       callback(err);
       return;
     }
 
     callback(err, {
-      city: address.City[0],
-      state: address.State[0],
-      zip: address.Zip5[0]
+      city: address.City,
+      state: address.State,
+      zip: address.Zip5
     });
   });
 };
@@ -130,10 +130,13 @@ usps.prototype.cityStateLookup = function(zip, callback) {
 /**
   Method to call USPS
 */
-function callUSPS(api, method, resultDotNotation, config, params, callback) {
+function callUSPS(api, method, property, config, params, callback) {
+  var requestName = method + 'Request';
+  var responseName = method + 'Response';
+
   var obj = {};
-  obj[method] = params;
-  obj[method]['@USERID'] = config.userId;
+  obj[requestName] = params;
+  obj[requestName]['@USERID'] = config.userId;
 
   var xml = builder.create(obj).end();
 
@@ -155,7 +158,7 @@ function callUSPS(api, method, resultDotNotation, config, params, callback) {
       return;
     }
 
-    xml2js.parseString(body, function(err, result) {
+    xml2js.parseString(body, {explicitArray: false}, function(err, result) {
       var errMessage;
 
       if (err) {
@@ -169,7 +172,7 @@ function callUSPS(api, method, resultDotNotation, config, params, callback) {
       // may have a root-level error
       if (result.Error) {
         try {
-          errMessage = result.Error.Description[0].trim();
+          errMessage = result.Error.Description.trim();
         } catch(err) {
           errMessage = result.Error;
         }
@@ -183,29 +186,16 @@ function callUSPS(api, method, resultDotNotation, config, params, callback) {
         resultDotNotation looks like 'key.key'
         though it may actually have arrays, so returning first cell
       */
-      var specificResult = result;
-      var parts = resultDotNotation.split('.');
-      function walkResult() {
-        var key = parts.shift();
 
-        if (key === undefined) {
-          return;
-        }
-
-        specificResult = specificResult[key];
-
-        if (Array.isArray(specificResult)) {
-          specificResult = specificResult[0];
-        }
-
-        walkResult();
+      var specificResult = {};
+      if (result && result[responseName] && result[responseName][property]) {
+        specificResult = result[responseName][property];
       }
-      walkResult();
 
       // specific error handling
       if (specificResult.Error) {
         try {
-          errMessage = specificResult.Error[0].Description[0].trim();
+          errMessage = specificResult.Error.Description.trim();
         } catch(err) {
           errMessage = specificResult.Error;
         }
