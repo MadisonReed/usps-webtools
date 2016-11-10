@@ -32,28 +32,44 @@ var usps = module.exports = function(config) {
 usps.prototype.verify = function(address, callback) {
   var obj = {
     Address: {
+      FirmName: address.firm_name,
       Address1: address.street2 || '',
       Address2: address.street1,
       City: address.city,
       State: address.state,
       Zip5: address.zip,
-      Zip4: ''
+      Zip4: address.zip4 ? address.zip4 : ''
     }
   };
 
-  callUSPS('Verify', 'AddressValidate', 'Address', this.config, obj, function(err, address) {
+  if(address.urbanization) {
+    obj.Address.Urbanization = address.urbanization;
+  }
+
+  callUSPS('Verify', 'AddressValidateRequest', 'AddressValidateResponse.Address', this.config, obj, function(err, address) {
     if (err) {
       callback(err);
       return;
     }
 
-    callback(null, {
-      street1: address.Address2,
-      street2: address.Address1 ? address.Address1 : '',
-      city: address.City,
-      zip: address.Zip5,
-      state: address.State
-    });
+    var result = {
+      street1: address.Address2[0],
+      street2: address.Address1 ? address.Address1[0] : '',
+      city: address.City[0],
+      zip: address.Zip5[0],
+      state: address.State[0],
+      zip4: address.Zip4[0]
+    };
+
+    if(address.FirmName) {
+      result.firm_name = address.FirmName[0];
+    }
+
+    if(address.Urbanization) {
+      result.urbanization = address.Urbanization[0];
+    }
+
+    callback(null, result);
   });
 
   return this;
@@ -173,7 +189,7 @@ function callUSPS(api, method, property, config, params, callback) {
       if (result.Error) {
         try {
           errMessage = result.Error.Description.trim();
-        } catch(err) {
+        } catch(e) {
           errMessage = result.Error;
         }
 
@@ -196,7 +212,7 @@ function callUSPS(api, method, property, config, params, callback) {
       if (specificResult.Error) {
         try {
           errMessage = specificResult.Error.Description.trim();
-        } catch(err) {
+        } catch(e) {
           errMessage = specificResult.Error;
         }
 
