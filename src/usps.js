@@ -38,7 +38,7 @@ usps.prototype.verify = function(address, callback) {
       City: address.city,
       State: address.state,
       Zip5: address.zip,
-      Zip4: address.zip4 ? address.zip4 : ''
+      Zip4: address.zip4 || ''
     }
   };
 
@@ -46,27 +46,27 @@ usps.prototype.verify = function(address, callback) {
     obj.Address.Urbanization = address.urbanization;
   }
 
-  callUSPS('Verify', 'AddressValidateRequest', 'AddressValidateResponse.Address', this.config, obj, function(err, address) {
+  callUSPS('Verify', 'AddressValidate', 'Address', this.config, obj, function(err, address) {
     if (err) {
       callback(err);
       return;
     }
 
     var result = {
-      street1: address.Address2[0],
-      street2: address.Address1 ? address.Address1[0] : '',
-      city: address.City[0],
-      zip: address.Zip5[0],
-      state: address.State[0],
-      zip4: address.Zip4[0]
+      street1: address.Address2,
+      street2: address.Address1 || '',
+      city: address.City,
+      zip: address.Zip5,
+      state: address.State,
+      zip4: address.Zip4
     };
 
     if(address.FirmName) {
-      result.firm_name = address.FirmName[0];
+      result.firm_name = address.FirmName;
     }
 
     if(address.Urbanization) {
-      result.urbanization = address.Urbanization[0];
+      result.urbanization = address.Urbanization;
     }
 
     callback(null, result);
@@ -143,14 +143,14 @@ usps.prototype.pricingRateV4 = function (pricingRate, callback) {
         }
     };
 
-    callUSPS('RateV4', 'RateV4Request', 'RateV4Response.Package', this.config, obj, function (err, lePackage) {
+    callUSPS('RateV4', 'RateV4Request', 'Package', this.config, obj, function (err, lePackage) {
         if (err) {
             callback(err);
             return;
         }
         callback(null, {
-            service: lePackage.Postage[0].MailService,
-            rate   : lePackage.Postage[0].Rate
+            service: lePackage.Postage.MailService,
+            rate   : lePackage.Postage.Rate
         });
     });
     return this;
