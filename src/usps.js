@@ -138,24 +138,21 @@ usps.prototype.pricingRateV4 = function (pricingRate, callback) {
             Width         : pricingRate.Width,
             Length        : pricingRate.Length,
             Height        : pricingRate.Height,
-            Girth         : pricingRate.Girth
-
+            Girth         : pricingRate.Girth,
+            Machinable   : pricingRate.Machinable,
         }
     };
 
-    callUSPS('RateV4', 'RateV4Request', 'Package', this.config, obj, function (err, lePackage) {
+    callUSPS('RateV4', 'RateV4', 'Package', this.config, obj, function (err, result) {
         if (err) {
             callback(err);
             return;
         }
-        callback(null, {
-            service: lePackage.Postage.MailService,
-            rate   : lePackage.Postage.Rate
-        });
+        
+        callback(null, result["Postage"]);
     });
     return this;
 };
-
 
 /**
   City State lookup, based on zip
