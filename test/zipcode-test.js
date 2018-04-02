@@ -1,70 +1,68 @@
-var assert = require('assert');
-var USPS = require('../');
-var should = require('chai').should();
+const USPS = require('../');
+const { test } = require('ava');
 
-var usps = new USPS({
+const usps = new USPS({
   server: 'http://production.shippingapis.com/ShippingAPI.dll',
   userId: '##'
 });
 
+const ZIP = '94607-3785';
 
-describe('Zipcode Lookup', function() {
-  var zip = '94607-3785';
-
-  it('should return the address with zip', function(done) {
-    usps.zipCodeLookup({
-      street1: '121 Embarcadero West',
-      street2: 'Apt 2205',
-      city: 'Oakland',
-      state: 'CA'
-    }, function(err, address) {
-      address.zip.should.equal(zip);
-      done();
-    });
+test.cb('Zipcode Lookup should return the address with zip', t => {
+  usps.zipCodeLookup({
+    street1: '121 Embarcadero West',
+    street2: 'Apt 2205',
+    city: 'Oakland',
+    state: 'CA'
+  }, (err, address) => {
+    t.falsy(err);
+    t.is(address.zip, ZIP);
+    t.end();
   });
+});
 
-  it('should error if address is invalid', function(done) {
-    usps.zipCodeLookup({
-      street1: 'sdfisd',
-      street2: 'Apt 2205',
-      city: 'Seattle',
-      state: 'WA'
-    }, function(err, address) {
-      err.message.should.equal('Address Not Found.');
-      done();
-    });
+test.cb('Zipcode Lookup should error if address is invalid', t => {
+  usps.zipCodeLookup({
+    street1: 'sdfisd',
+    street2: 'Apt 2205',
+    city: 'Seattle',
+    state: 'WA'
+  }, err => {
+    t.truthy(err);
+    t.is(err.message, 'Address Not Found.');
+    t.end();
   });
+});
 
-  it('should pass error to callback if street is missing', function(done) {
-    usps.zipCodeLookup({
-      city: 'Oakland',
-      state: 'CA'
-    }, function(err, address) {
-      should.exist(err);
-      done();
-    });
+test.cb('Zipcode Lookup should pass error to callback if street is missing', t => {
+  usps.zipCodeLookup({
+    city: 'Oakland',
+    state: 'CA'
+  }, err => {
+    t.truthy(err);
+    t.end();
   });
+});
 
-  it('error should be passed to callback if city is missing', function(done) {
-    usps.zipCodeLookup({
-      street1: '121 Embarcadero West',
-      street2: 'Apt 2205',
-      state: 'CA'
-    }, function(err, address) {
-      should.exist(err);
-      done();
-    });
+test.cb('Zipcode Lookup error should be passed to callback if city is missing', t => {
+  usps.zipCodeLookup({
+    street1: '121 Embarcadero West',
+    street2: 'Apt 2205',
+    state: 'CA'
+  }, err => {
+    t.truthy(err);
+    t.end();
   });
+});
 
-  it('should return an error if the address is fake', function(done) {
-    usps.zipCodeLookup({
-      street1: '453 sdfsdfa Road',
-      street2: 'sdfadf',
-      city: 'kojs',
-      state: 'LS'
-    }, function(err, address) {
-      should.exist(err);
-      done();
-    })
+test.cb('Zipcode Lookup should return an error if the address is fake', t => {
+  usps.zipCodeLookup({
+    street1: '453 sdfsdfa Road',
+    street2: 'sdfadf',
+    city: 'kojs',
+    state: 'LS'
+  }, err => {
+    t.truthy(err);
+    t.end();
   });
 });
