@@ -74,12 +74,7 @@ callback: err, address
 __Example__
 
 ``` js
-usps.cityStateLookup({
-  street1: '322 3rd st.',
-  street2: 'Apt 2',
-  city: 'San Francisco',
-  state: 'CA'
-}, function(err, address) {
-  console.log(address);
+usps.cityStateLookup('94107', function(err, result) {
+  // result == { city: , state: , zip: }
 });
 ```
