@@ -11,9 +11,9 @@ Initializing the usps model with usps server url address, and user id.
 __Example:__
 
 ``` js
-USPS = require('usps-webtools');
+const USPS = require('usps-webtools');
 
-var usps = new USPS({
+const usps = new USPS({
   server: 'http://production.shippingapis.com/ShippingAPI.dll',
   userId: 'USPS User id',
   ttl: 10000 //TTL in milliseconds for request
