@@ -78,7 +78,7 @@ class USPS {
         Vacant: 'vacant'
       };
 
-      Object.keys(optional).forEach(function(key) {
+      Object.keys(optional).forEach(key => {
         const resultKey = optional[key];
         if (address[key]) {
           result[resultKey] = address[key];
