@@ -11,9 +11,9 @@ Initializing the usps model with usps server url address, and user id.
 __Example:__
 
 ``` js
-USPS = require('usps-webtools');
+const USPS = require('usps-webtools');
 
-var usps = new USPS({
+const usps = new USPS({
   server: 'http://production.shippingapis.com/ShippingAPI.dll',
   userId: 'USPS User id',
   ttl: 10000 //TTL in milliseconds for request
@@ -74,12 +74,7 @@ callback: err, address
 __Example__
 
 ``` js
-usps.cityStateLookup({
-  street1: '322 3rd st.',
-  street2: 'Apt 2',
-  city: 'San Francisco',
-  state: 'CA'
-}, function(err, address) {
-  console.log(address);
+usps.cityStateLookup('94107', function(err, result) {
+  // result == { city: , state: , zip: }
 });
 ```
