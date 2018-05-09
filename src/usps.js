@@ -6,14 +6,17 @@ const xml2js = require('xml2js');
 // internal dependencies
 const USPSError = require('./error.js');
 
-class USPS {
+module.exports = class USPS {
   constructor(config) {
     if (!(config && config.server && config.userId)) {
       throw new USPSError('must pass usps server url and userId');
     }
     this.config = {
       ttl: 100000,
+      // Until jshint 2.10.0 comes out, we have to explicitly ignore spread operators in objects
+      // jshint ignore:start
       ...config
+      // jshint ignore:end
     };
   }
 
@@ -187,7 +190,7 @@ class USPS {
       });
     });
   }
-}
+};
 
 /**
   Method to call USPS
@@ -198,7 +201,10 @@ function callUSPS(api, method, property, config, params, callback) {
 
   const obj = {
     [requestName]: {
+      // Until jshint 2.10.0 comes out, we have to explicitly ignore spread operators in objects
+      // jshint ignore:start
       ...params,
+      // jshint ignore:end
       ['@USERID']: config.userId
     }
   };
@@ -253,7 +259,7 @@ function callUSPS(api, method, property, config, params, callback) {
         though it may actually have arrays, so returning first cell
       */
 
-      const specificResult = {};
+      var specificResult = {};
       if (result && result[responseName] && result[responseName][property]) {
         specificResult = result[responseName][property];
       }

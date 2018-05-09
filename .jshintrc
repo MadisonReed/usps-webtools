@@ -1,0 +1,7 @@
+{
+    "esversion": 6,
+    "loopfunc": true,
+    "unused": true,
+    "node": true,
+    "strict": "implied"
+}
