@@ -18,6 +18,10 @@
       "email": "scottspork@gmail.com"
     }
   ],
+  "scripts": {
+    "lint": "bash ./bash/lint.sh",
+    "test": "bash ./bash/test.sh"
+  },
   "keywords": [
     "usps",
     "web-tools",
@@ -33,12 +37,14 @@
     "xmlbuilder": "^8.2.2"
   },
   "devDependencies": {
-    "mocha": "1.17.1",
-    "chai": "1.9.0"
+    "ava": "^0.25.0",
+    "babel-eslint": "8.0.1",
+    "eslint": "4.10.0",
+    "jscs": "3.0.7"
   },
   "repository": "https://github.com/MadisonReed/usps-webtools.git",
   "engines": {
-    "node": ">=0.10.20"
+    "node": ">=8.x"
   },
   "license": "MIT"
 }
