@@ -13,38 +13,17 @@
     @param {String} msg The relevant error message
     @param {Error|String|Object} [original] The original error being extended
 */
-function USPSError(msg) {
-  var key;
+class USPSError extends Error {
+  constructor(message, ...additions) {
+    // addition should be an {} obj (possibly an Error)
+    for (let addition of additions) {
+      for (let key in addition) {
+        this[key] = addition[key];
+      }
+    }
 
-  Error.call(this);
-
-  for (var i = 1, l = arguments.length; i < l; i++) {
-    extendError(this, arguments[i]);
-  }
-
-  if (!this.original) {
-    Error.captureStackTrace(this, arguments.callee);
-  }
-
-  this.name = 'USPS Webtools Error',
-  this.message = typeof msg === 'string' ? msg : 'An error occurred';
-}
-USPSError.prototype.__proto__ = Error.prototype;
-
-USPSError.prototype.toString = function() {
-  return JSON.stringify(this);
-};
-
-function extendError(err, additions) {
-  for (var key in additions) {
-    err[key] = additions[key];
-  }
-
-  if (additions instanceof Error) {
-    err.original = {
-      message: additions.message,
-      name: additions.name
-    };
+    this.name = 'USPS Webtools Error';
+    this.message = typeof message === 'string' ? message : 'An error occurred';
   }
 }
 
