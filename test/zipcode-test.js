@@ -3,7 +3,7 @@ const { test } = require('ava');
 
 const usps = new USPS({
   server: 'http://production.shippingapis.com/ShippingAPI.dll',
-  userId: '##'
+  userId: process.env.USPS_USER_ID
 });
 
 const ZIP = '94607-3785';
