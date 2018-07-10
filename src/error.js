@@ -15,6 +15,7 @@
 */
 class USPSError extends Error {
   constructor(message, ...additions) {
+    super()
     // addition should be an {} obj (possibly an Error)
     for (let addition of additions) {
       for (let key in addition) {
