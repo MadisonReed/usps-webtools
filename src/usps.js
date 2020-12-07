@@ -242,6 +242,12 @@ function callUSPS(api, method, property, config, params, callback) {
         }));
       }
 
+      if (!result) {
+        return callback(new USPSError("No response after parsing XML", {
+          body
+        }));
+      }
+
       // may have a root-level error
       if (result.Error) {
         try {
