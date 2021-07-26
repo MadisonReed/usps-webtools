@@ -19,8 +19,7 @@
     }
   ],
   "scripts": {
-    "lint": "bash ./bash/lint.sh",
-    "test": "bash ./bash/test.sh"
+    "test": "ava"
   },
   "keywords": [
     "usps",
@@ -37,10 +36,9 @@
     "xmlbuilder": "^10.1.1"
   },
   "devDependencies": {
-    "ava": "^0.25.0",
+    "ava": "^3.15.0",
     "babel-eslint": "8.0.1",
-    "eslint": "4.10.0",
-    "jscs": "3.0.7"
+    "eslint": "4.10.0"
   },
   "repository": "https://github.com/MadisonReed/usps-webtools.git",
   "engines": {

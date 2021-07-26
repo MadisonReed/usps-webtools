@@ -265,7 +265,7 @@ function callUSPS(api, method, property, config, params, callback) {
         though it may actually have arrays, so returning first cell
       */
 
-      var specificResult = {};
+      let specificResult = {};
       if (result && result[responseName] && result[responseName][property]) {
         specificResult = result[responseName][property];
       }

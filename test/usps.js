@@ -1,5 +1,5 @@
 const USPS = require('../');
-const { test } = require('ava');
+const test = require('ava');
 
 test('USPS should throw an exception when constructor is called without config object', t => {
   t.throws(() => {
